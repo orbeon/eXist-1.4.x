@@ -1,0 +1,661 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ======================================================================= -->
+<!-- eXist build file                                                        -->
+<!-- ======================================================================= -->
+
+<!-- $Id$ -->
+
+<project basedir="../.." default="all" name="exist">
+
+    <!-- setup properties -->
+    <property file="${basedir}/build.properties" />
+
+    <property name="jetty.dir" value="tools/jetty"/>
+    <property name="src" value="./src"/>
+    <property name="src.webapp" value="./webapp"/>
+    <property name="samples" value="./samples/src"/>
+    <property name="bin" value="./bin"/>
+
+    <property name="build" value="./build"/>
+    <property name="build.src" value="${build}/src"/>
+    <property name="build.scripts" value="${build}/scripts"/>
+    <property name="build.soap" value="${build}/soap"/>
+    <property name="build.classes" value="${build}/classes"/>
+    <property name="build.docs" value="${build}/docs"/>
+    <property name="build.docs.src" value="${build.docs}/source"/>
+    <property name="build.docs.html" value="${build.docs}/html"/>
+    <property name="build.examples" value="${build}/examples"/>
+    <property name="build.extensions" value="./extensions"/>
+    <property name="build.extensions.indexes" value="${build.extensions}/indexes"/>
+    <property name="dist" value="./dist"/>
+    <property name="webapp.dir" value="${dist}/webapp"/>
+    <property name="build.compiler" value="modern"/>
+    <property name="build.compiler.source" value="1.5"/>
+    <property name="build.compiler.target" value="1.5"/>
+    <property name="build.debug" value="on"/>
+    <property name="build.optimize" value="on"/>
+    <property name="build.deprecation" value="on"/>
+    <property name="jvmarg" value="-Xmx128000k -Xms32000k -Djetty.home=${jetty.dir} -Dexist.home=${basedir}"/>
+    <property name="xmldb.src" value="undefined"/>
+    <property name="dist.dir" value="${dist}/${project.name}-${project.version}"/>
+
+    <!-- import common targets -->
+    <!-- <import file="../../build.xml"/> -->
+    <import file="./subversion.xml"/>
+    <import file="./junit.xml"/>
+    <import file="./antlr3.xml"/>
+
+    <!-- setup conditional properties -->
+    <available file="${xmldb.src}" type="dir" property="has.xmldb.src"/>
+    <available file="${catalina.home}/bin" property="catalina.present"/>
+    <available file="key.store" property="key.store.present"/>
+
+    <!-- check build file for index extensions -->
+    <uptodate property="extensions.uptodate" srcfile="${build.extensions.indexes}/modules.xml"
+        targetfile="${build.extensions.indexes}/build.xml"/>
+
+    <!-- additional set of ant tasks -->
+    <property name="asocat-exist.jar" location="${tools.ant}/lib/asocat-exist.jar"/>
+
+    <!-- setup class path -->
+    <path id="classpath.core">
+        <fileset dir="${lib.core}">
+            <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${lib.optional}">
+            <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${lib.endorsed}">
+            <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${lib.cocoon}">
+            <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${lib.user}">
+            <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${lib.extensions}">
+            <include name="*.jar"/>
+        </fileset>
+
+        <fileset dir="extensions">
+            <include name="**/lib/*.jar"/>
+        </fileset>
+        <fileset dir="${tools.ant}/lib">
+            <include name="*.jar"/>
+        </fileset>
+
+        <pathelement path="exist.jar"/>
+        <pathelement path="exist-optional.jar"/>
+
+        <pathelement path="start.jar"/>
+        <pathelement path="${java.class.path}"/>
+    </path>
+
+    <path id="classpath.jetty">
+        <fileset dir="${jetty.dir}/lib">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <taskdef name="java2wsdl" classname="org.apache.axis.tools.ant.wsdl.Java2WsdlAntTask">
+        <classpath refid="classpath.core"/>
+    </taskdef>
+
+    <taskdef name="wsdl2java" classname="org.apache.axis.tools.ant.wsdl.Wsdl2javaAntTask">
+        <classpath refid="classpath.core"/>
+    </taskdef>
+
+    <taskdef name="axis-admin" classname="org.apache.axis.tools.ant.axis.AdminClientTask">
+        <classpath refid="classpath.core"/>
+    </taskdef>
+
+    <taskdef name="cocoon" classname="org.apache.cocoon.CocoonTask">
+        <classpath refid="classpath.core"/>
+    </taskdef>
+
+    <!-- =================================================================== -->
+    <!-- Prepare the build                                                   -->
+    <!-- =================================================================== -->
+    <target name="prepare" depends="svn-prepare">
+
+        <tstamp/>
+        <property file="VERSION.txt"/>
+
+        <echo message="-------------------------"/>
+        <echo message="eXist ${project.version} build"/>
+        <echo message="-------------------------"/>
+        <echo message="SVN revision ${svn.revision}"/>
+        <echo message=""/>
+        <echo message="${ant.version}"/>
+        <echo message="-------------------------"/>
+        <echo/>
+        <echo message="basedir=${basedir}"/>
+
+        <mkdir dir="${build.classes}"/>
+        <mkdir dir="${jetty.dir}/logs"/>
+        <mkdir dir="${jetty.dir}/work"/>
+
+        <filter token="version" value="${project.version}-rev:${svn.revision}-${DSTAMP}"/>
+        <filter token="database" value="native"/>
+
+        <copy file="${src.webapp}/header.xml.tmpl" tofile="${src.webapp}/header.xml"
+            filtering="true" overwrite="true"/>
+        <copy file="${src.webapp}/header.xml.tmpl" tofile="${src.webapp}/xquery/header.xml"
+            filtering="true" overwrite="true"/>
+        <copy file="${src.webapp}/xqts/config.xml.tmpl" tofile="${src.webapp}/xqts/config.xml"
+            filtering="true"/>
+
+        <copy file="${basedir}/conf.xml.tmpl" tofile="${basedir}/conf.xml" filtering="true">
+			<filterset>
+				<filter token="dataDir" value="webapp/WEB-INF/data"/>
+			</filterset>
+		</copy>
+        <copy file="${basedir}/conf.xml.tmpl" tofile="${basedir}/installer/conf.xml" filtering="true">
+			<filterset>
+				<filter token="dataDir" value="$dataDir"/>
+			</filterset>
+		</copy>
+        <copy file="${basedir}/client.properties.tmpl" tofile="${basedir}/client.properties"
+            filtering="true"/>
+        <copy file="${basedir}/server.xml.tmpl" tofile="${basedir}/server.xml" filtering="true"/>
+        <copy file="${basedir}/descriptor.xml.tmpl" tofile="${basedir}/descriptor.xml"
+            filtering="true"/>
+        <copy file="${basedir}/mime-types.xml.tmpl" tofile="${basedir}/mime-types.xml"
+            filtering="true"/>
+        <copy file="${basedir}/mime-types.xml" tofile="${src}/org/exist/util/mime-types.xml"/>
+
+        <!-- <ant antfile="build.xml" dir="extensions/indexes" target="prepare"/> -->
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Compiles the source code                                            -->
+    <!-- =================================================================== -->
+    <target name="compile" depends="prepare" description="Compiles the source code">
+
+        <echo
+            message="Compiling with Java ${ant.java.version} from ${build.compiler.source} source to ${build.compiler.target} target, debug ${build.debug}, optimize ${build.optimize}, deprecation ${build.deprecation}"/>
+        <javac debug="${build.debug}" deprecation="${build.deprecation}" destdir="${build.classes}"
+            encoding="UTF-8" optimize="${build.optimize}" srcdir="${src}"
+            source="${build.compiler.source}" target="${build.compiler.target}">
+
+            <include name="org/**"/>
+            <include name="org/exist/schema/**"/>
+            <exclude name="org/exist/http/realm/**"/>
+            <exclude name="doxygen"/>
+            <classpath>
+                <path refid="classpath.core"/>
+                <path refid="classpath.jetty"/>
+            </classpath>
+        </javac>
+
+        <!-- <ant antfile="build.xml" dir="extensions/indexes" target="compile" /> -->
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Compile the Tomcat realm                                            -->
+    <!-- =================================================================== -->
+    <target name="compile-tomcat-realm" if="catalina.present" description="Compile the Tomcat realm">
+        <echo
+            message="Compiling Tomcat Realm  with Java ${ant.java.version} from ${build.compiler.source} source to ${build.compiler.target} target, debug ${build.debug}, optimize ${build.optimize}, deprecation ${build.deprecation}"/>
+        <javac debug="${build.debug}" deprecation="${build.deprecation}" destdir="${build.classes}"
+            encoding="UTF-8" optimize="${build.optimize}" srcdir="${src}"
+            source="${build.compiler.source}" target="${build.compiler.target}">
+            <include name="org/exist/http/realm/**"/>
+            <classpath>
+                <path refid="classpath.core"/>
+                <fileset dir="${catalina.home}/bin">
+                    <include name="*.jar"/>
+                </fileset>
+                <fileset dir="${catalina.home}/server/lib">
+                    <include name="*.jar"/>
+                </fileset>
+                <!--fileset dir="${catalina.home}/common/lib">
+                <include name="*.jar"/>
+                </fileset-->
+            </classpath>
+        </javac>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Run antlr parser generator									   	   -->
+    <!-- needs antlr distribution-directory in the classpath			   -->
+    <!-- =================================================================== -->
+    <target depends="prepare" name="antlr">
+        <echo message="Running ANTLR to generate XQuery parser"/>
+        <delete failonerror="false">
+            <fileset dir="${src}/org/exist/xquery/parser">
+                <include name="*.java"/>
+                <include name="*.txt"/>
+                <exclude name="XQueryAST.java"/>
+            </fileset>
+        </delete>
+        <antlr target="${src}/org/exist/xquery/parser/XQuery.g"
+            outputdirectory="${src}/org/exist/xquery/parser" traceparser="${antlr.traceParser}"
+            tracelexer="${antlr.traceLexer}">
+            <classpath>
+                <path refid="classpath.core"/>
+            </classpath>
+        </antlr>
+        <antlr target="${src}/org/exist/xquery/parser/XQueryTree.g"
+            outputdirectory="${src}/org/exist/xquery/parser" tracetreewalker="${antlr.traceTreeWalker}">
+            <classpath>
+                <path refid="classpath.core"/>
+            </classpath>
+        </antlr>
+        <antlr target="${src}/org/exist/xquery/parser/DeclScanner.g"
+            outputdirectory="${src}/org/exist/xquery/parser">
+            <classpath>
+                <path refid="classpath.core"/>
+            </classpath>
+        </antlr>
+    </target>
+
+    <target depends="antlr,jar" name="xquery"/>
+    <target depends="XQueryTreeParser,jar" name="xquery-ng"/>
+
+    <!-- ================================================================== -->
+    <!-- Create jar files                    							   	-->
+    <!-- ================================================================== -->
+    <target name="jar" depends="compile, compile-tomcat-realm"
+        description="Create eXist unsigned jar files">
+        <filter token="version" value="${project.version}"/>
+        <filter token="build" value="${DSTAMP}"/>
+        <filter token="revision" value="${svn.revision}"/>
+
+        <!--copy file="${src}/CatalogManager.properties" todir="${build.classes}"/-->
+        <copy todir="${build.classes}/org/exist/client">
+            <fileset dir="${src}/org/exist/client">
+                <include name="icons/**.png"/>
+                <include name="icons/**.gif"/>
+                <include name="*.xsl"/>
+                <include name="**/*.xconf"/>
+            </fileset>
+        </copy>
+        <copy todir="${build.classes}/org/exist/xquery/lib">
+            <fileset dir="${src}/org/exist/xquery/lib">
+                <include name="**.xq*"/>
+            </fileset>
+        </copy>
+        <copy todir="${build.classes}/org/exist/atom/modules">
+            <fileset dir="${src}/org/exist/atom/modules">
+                <include name="**.xq"/>
+            </fileset>
+        </copy>
+        <copy todir="${build.classes}/org/exist/http">
+            <fileset dir="${src}/org/exist/http">
+                <include name="**.xq"/>
+            </fileset>
+        </copy>
+        <copy todir="${build.classes}/org/exist/security/xacml/policies">
+            <fileset dir="${src}/org/exist/security/xacml/policies">
+                <include name="*.xml"/>
+            </fileset>
+        </copy>
+        <copy file="${src}/org/exist/xquery/util/messages.properties"
+            todir="${build.classes}/org/exist/xquery/util"/>
+        <copy file="${src}/org/exist/ant/antlib.xml" todir="${build.classes}/org/exist/ant"/>
+        <copy file="${src}/org/exist/exist.xsl" todir="${build.classes}/org/exist"/>
+        <copy file="${src}/org/exist/xmldb.xsl" todir="${build.classes}/org/exist"/>
+        <copy file="${src}/org/exist/xmldb2.xsl" todir="${build.classes}/org/exist"/>
+        <copy file="${src}/org/exist/start/start.config" todir="${build.classes}/org/exist/start"/>
+        <copy file="${src}/org/exist/security/security.properties"
+            todir="${build.classes}/org/exist/security"/>
+        <copy file="${src}/org/exist/system.properties" todir="${build.classes}/org/exist"
+            filtering="true" overwrite="true"/>
+        <copy file="${src}/org/exist/util/mime-types.xml" todir="${build.classes}/org/exist/util"/>
+        <copy todir="${build.classes}/org/exist/http/webdav/methods">
+            <fileset dir="${src}/org/exist/http/webdav/methods">
+                <include name="**.xq"/>
+            </fileset>
+        </copy>
+        <copy todir="${build.classes}/org/exist/validation/internal/query">
+            <fileset dir="${src}/org/exist/validation/internal/query">
+                <include name="**.xq"/>
+            </fileset>
+        </copy>
+        <copy file="${src}/org/exist/scheduler/quartz.properties"
+            todir="${build.classes}/org/exist/scheduler"/>
+
+        <!-- Convert native to ascii-->
+        <native2ascii src="${src}/org/exist/client" dest="${build.classes}/org/exist/client"
+            includes="messages*.properties"/>
+
+        <echo message="Creating exist.jar ..."/>
+        <jar basedir="${build.classes}" compress="true" jarfile="exist.jar">
+            <manifest>
+                <attribute name="Project-Name" value="${project.name}"/>
+                <attribute name="Project-Version" value="${project.version}"/>
+                <attribute name="Project-Build" value="${DSTAMP}"/>
+                <attribute name="Project-CodeName" value="${project.codename}"/>
+                <attribute name="SVN-Revision" value="${svn.revision}"/>
+            </manifest>
+            <exclude name="org/exist/start/**"/>
+            <exclude name="org/exist/soap/**"/>
+            <exclude name="org/exist/ant/**"/>
+            <exclude name="org/exist/http/servlets/**"/>
+            <exclude name="org/exist/xquery/functions/request/**"/>
+            <exclude name="org/exist/cocoon/**"/>
+            <exclude name="org/exist/source/CocoonSource.java"/>
+            <exclude name="org/exist/*.xsl"/>
+        </jar>
+        <echo message="Creating start.jar ..."/>
+        <jar basedir="${build.classes}" compress="true" jarfile="start.jar">
+            <manifest>
+                <attribute name="Main-Class" value="org.exist.start.Main"/>
+                <attribute name="Package-Title" value="org.exist"/>
+                <attribute name="Implementation-Title" value="eXist XML Database"/>
+                <attribute name="Implementation-URL" value="http://exist-db.org"/>
+                <attribute name="Project-Name" value="${project.name}"/>
+                <attribute name="Project-Version" value="${project.version}"/>
+                <attribute name="Project-Build" value="${DSTAMP}"/>
+                <attribute name="Project-CodeName" value="${project.codename}"/>
+                <attribute name="SVN-Revision" value="${svn.revision}"/>
+            </manifest>
+            <include name="org/exist/start/**"/>
+        </jar>
+        <echo message="Creating exist-optional.jar ..."/>
+        <jar basedir="${build.classes}" compress="true" jarfile="exist-optional.jar">
+            <manifest>
+                <attribute name="Project-Name" value="${project.name}"/>
+                <attribute name="Project-Version" value="${project.version}"/>
+                <attribute name="Project-Build" value="${DSTAMP}"/>
+                <attribute name="Project-CodeName" value="${project.codename}"/>
+                <attribute name="SVN-Revision" value="${svn.revision}"/>
+            </manifest>
+            <include name="org/exist/soap/**"/>
+            <include name="org/exist/ant/**"/>
+            <include name="org/exist/http/servlets/**"/>
+            <include name="org/exist/xquery/functions/request/**"/>
+            <include name="org/exist/cocoon/**"/>
+            <include name="org/exist/source/CocoonSource.java"/>
+            <include name="org/exist/*.xsl"/>
+        </jar>
+    </target>
+
+    <!-- ================================================================== -->
+    <!-- Build all                                                          -->
+    <!-- ================================================================== -->
+    <target name="all"
+        depends="jar,wrapper,extension-modules,extension-indexes,extension-versioning,extension-fluent,extension-xprocxq,extension-debuggee,test-compile"
+        description="Build all">
+        <antcall target="sign"/>
+    </target>
+
+    <!-- ================================================================== -->
+    <!-- Rebuild all                                                        -->
+    <!-- ================================================================== -->
+    <target name="rebuild" depends="clean,all" description="Rebuild all"/>
+
+
+    <!-- ================================================================== -->
+    <!-- Create javadoc                                                     -->
+    <!-- ================================================================== -->
+    <target depends="prepare" name="javadocs" description="Create javadoc">
+        <mkdir dir="${build.src}"/>
+        <antcall target="copy-xapi"/>
+
+        <!--delete dir="webapp/api"/>
+        <mkdir dir="webapp/api"/-->
+        <echo message="Generating Javadocs ..."/>
+        <echo message="XMLDB: ${xmldb.src} ${has.xmldb.src}"/>
+        <javadoc bottom="Copyright (C) Wolfgang Meier. All rights reserved." destdir="webapp/api"
+            doctitle="eXist Javadocs" noindex="true" notree="true" access="public" maxmemory="512M"
+            source="1.5">
+            <packageset dir="${src}">
+                <include name="org/**"/>
+            </packageset>
+            <packageset dir="${build.src}">
+                <include name="org/**"/>
+            </packageset>
+            <classpath>
+                <path refid="classpath.core"/>
+                <path refid="classpath.jetty"/>
+                <fileset dir="${catalina.home}/server/lib" includes="*.jar"/>
+            </classpath>
+            <link href="http://java.sun.com/javase/6/docs/api/"/>
+            <link href="http://java.sun.com/javaee/5/docs/api/"/>
+            <link href="http://commons.apache.org/codec/apidocs"/>
+            <link href="http://commons.apache.org/collections/api/"/>
+            <link href="http://commons.apache.org/discovery/apidocs/"/>
+            <link href="http://commons.apache.org/fileupload/apidocs/"/>
+            <link href="http://commons.apache.org/io/api-1.4/"/>
+            <link href="http://commons.apache.org/logging/apidocs/"/>
+            <link href="http://commons.apache.org/pool/apidocs/"/>
+            <link href="http://hc.apache.org/httpclient-3.x/apidocs/"/>
+            <link href="http://jline.sourceforge.net/javadoc/"/>
+            <link href="http://logging.apache.org/log4j/1.2/apidocs/"/>
+            <link href="http://nekohtml.sourceforge.net/javadoc/"/>
+            <link href="http://quartz.sourceforge.net/javadoc/"/>
+            <link href="http://sunxacml.sourceforge.net/javadoc/"/>  
+            <link href="http://ws.apache.org/axis/java/apiDocs/"/>
+            <link href="http://ws.apache.org/xmlrpc/apidocs/"/>
+            <link href="http://www.antlr2.org/javadoc/"/>
+            <link href="http://www.jgroups.org/javagroupsnew/docs/javadoc/"/>          
+            <link href="http://xerces.apache.org/xerces2-j/javadocs/api/"/>
+            <link href="http://xerces.apache.org/xerces2-j/javadocs/xerces2/"/>
+            <link href="http://xerces.apache.org/xerces2-j/javadocs/xni/"/>
+            <link href="http://xml.apache.org/commons/components/apidocs/resolver/"/>
+            <link href="http://xml.apache.org/xalan-j/apidocs/"/>
+            <link href="http://java.sun.com/products/javamail/javadocs/"/>
+            <link href="http://java.sun.com/javase/technologies/desktop/javabeans/glasgow/javadocs"/>   
+        </javadoc>
+
+        <ant antfile="build.xml" dir="extensions/fluent" target="javadoc"/>
+
+        <delete dir="${build.src}"/>
+    </target>
+
+    <target name="copy-xapi" if="has.xmldb.src">
+        <echo message="Copying XML:DB API sources ..."/>
+        <copy todir="${build.src}">
+            <fileset dir="${xmldb.src}">
+                <include name="org/xmldb/api/base/**"/>
+                <include name="org/xmldb/api/modules/**"/>
+                <include name="org/xmldb/api/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <!-- ================================================================== -->
+    <!-- Cleanup                                                            -->
+    <!-- ================================================================== -->
+    <target name="clean" description="Cleanup" depends="prepare-extensions">
+        <echo message="-------------------------"/>
+        <echo message="Cleaning"/>
+        <echo message="-------------------------"/>
+        <delete dir="${build.classes}"/>
+        <delete dir="${build.examples}"/>
+        <delete dir="${dist.dir}"/>
+        <delete quiet="true">
+            <fileset dir="log" includes="*"/>
+            <fileset dir="tmp" includes="*"/>
+            <fileset dir="${src.webapp}/WEB-INF/logs" excludes=".DO_NOT_DELETE" includes="*"/>
+        </delete>
+
+        <delete dir="${junit.reports}/junit"/>
+        <delete dir="${junit.reports}/pmd"/>
+        <delete dir="${junit.reports}/jdepend"/>
+        <delete dir="${junit.reports}/classes"/>
+
+        <!-- valuable data? -->
+        <delete dir="${src.webapp}/WEB-INF/data/backup"/>
+        <delete dir="${src.webapp}/WEB-INF/data/journal"/>
+        <delete dir="${src.webapp}/WEB-INF/data/fs"/>
+        <delete dir="${src.webapp}/WEB-INF/data/fs.journal"/>
+		<delete dir="${src.webapp}/WEB-INF/data/lucene"/>
+        <delete>
+            <fileset dir="${src.webapp}/WEB-INF/data" includes="*.dbx,*.log,*.lck,spatial_index.*"
+                excludes=".DO_NOT_DELETE"/>
+        </delete>
+
+        <delete dir="samples/classes"/>
+        <delete failonerror="no" file="examples.jar"/>
+        <delete failonerror="no" file="exist.jar"/>
+        <delete failonerror="no" file="exist-optional.jar"/>
+        <delete failonerror="no" file="start.jar"/>
+        <delete>
+            <fileset dir="installer" includes="eXist-*.jar,install.xml"/>
+        </delete>
+
+        <delete failonerror="no" dir="${dist}"/>
+        
+        <!-- XQTS files -->
+        <delete failonerror="no">
+            <fileset dir="${junit.reports}/external" includes="*.zip"/>
+        </delete>
+        
+
+        <ant antfile="build.xml" dir="tools/wrapper" target="clean" inheritall="false"/>
+        <ant antfile="build.xml" dir="extensions/modules" target="clean" inheritall="false"/>
+        <ant antfile="build.xml" dir="extensions/indexes" target="clean" inheritall="false"/>
+        <ant antfile="build.xml" dir="extensions/fluent" target="clean" inheritall="false"/>
+        <ant antfile="build.xml" dir="extensions/versioning" target="clean" inheritall="false"/>
+        <ant antfile="xprocxq.xml" dir="extensions" target="clean" inheritall="false"/>
+        <ant antfile="build.xml" dir="extensions/debuggee" target="clean" inheritall="false"/>
+        <antcall target="extensions-xslt"/>
+    </target>
+
+    <target name="clean-all" description="Cleanup deeper" depends="prepare-extensions">
+        <!-- javadoc -->
+        <delete dir="${src.webapp}/api"/>
+
+        <!-- derived files -->
+        <delete failonerror="no" file="client.properties"/>
+        <delete failonerror="no" file="conf.xml"/>
+        <delete failonerror="no" file="descriptor.xml"/>
+        <delete failonerror="no" file="mime-types.xml"/>
+        <delete failonerror="no" file="server.xml"/>
+
+        <delete>
+            <fileset dir="installer" includes="install.xml"/>
+            <fileset dir="webapp" includes="header.xml"/>
+            <fileset dir="webapp/xqts" includes="config.xml"/>
+        </delete>
+
+        <!-- more files -->
+        <delete failonerror="no" file=".exist_history"/>
+        <delete failonerror="no" file=".exist_query_history"/>
+
+        <!-- XQTS files -->
+        <delete failonerror="no">
+            <fileset dir="${junit.reports}/src/org/exist/xquery/xqts" includes="*" excludes="XQTS_case.java,XQTS_To_junit.java,config.xml,hacked-tests.xml,xqts.xql"/>
+            <fileset dir="${junit.reports}/external" includes="*"/>
+        </delete>
+
+    </target>
+
+    <!-- ============================================================================ -->
+    <!-- Build thirdparty modules (JBoss integration)                                 -->
+    <!--                                                                              -->
+    <!-- ============================================================================ -->
+    <target name="thirdparty" depends="jar">
+        <ant antfile="build.xml" dir="thirdparty/jboss"/>
+    </target>
+
+    <target name="wrapper" depends="jar">
+        <ant antfile="build.xml" dir="tools/wrapper" inheritall="false"/>
+    </target>
+
+    <target name="extension-modules" depends="jar">
+        <ant antfile="build.xml" dir="extensions/modules" inheritall="false"/>
+    </target>
+
+    <target name="extension-indexes" depends="prepare-extensions,jar">
+        <ant antfile="build.xml" dir="extensions/indexes" inheritall="false"/>
+    </target>
+
+    <target name="extension-versioning" depends="prepare-extensions,jar">
+        <ant antfile="build.xml" dir="extensions/versioning" inheritall="false"/>
+    </target>
+    
+    <target name="extension-debuggee" depends="jar">
+        <ant antfile="build.xml" dir="extensions/debuggee" inheritall="false"/>
+    </target>
+    
+    <target name="extension-fluent" depends="jar">
+        <ant antfile="build.xml" dir="extensions/fluent" inheritall="false"/>
+    </target>
+    
+    <target name="extension-xprocxq" depends="jar">
+        <ant antfile="xprocxq.xml" dir="extensions" inheritall="false"/>
+    </target>
+    
+    <target name="samples" depends="jar" description="Build samples">
+        <ant antfile="build.xml" dir="samples"/>
+    </target>
+
+    <target name="cleandocs">
+        <replaceregexp>
+            <regexp pattern="/\*.*Description of the Method.*\*/"/>
+            <substitution expression=""/>
+            <fileset dir="src/org/exist/xmldb">
+                <include name="*.java"/>
+            </fileset>
+        </replaceregexp>
+    </target>
+
+    <!-- ============================================================================ -->
+    <!-- Sign jar files for java webstart.                                            -->
+    <!--                                                                              -->
+    <!-- ============================================================================ -->
+    <target name="sign" if="key.store.present">
+
+        <!-- Only sign if key store exists. otherwise skip signing -->
+
+        <echo message="!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"/>
+        <echo message="!! Signing jar files ..."/>
+        <echo message="!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"/>
+        <ant antfile="build/scripts/jarsigner.xml" dir="." target="jnlp-sign-exist"/>
+
+        <echo message="!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"/>
+        <echo message="!! Please run &apos;$EXIST_HOME/build.[bat|sh] -f build\scripts\jarsigner.xml&apos; "/>
+        <echo message="!! once manually to use a default keystore to sign the core jars or put !!"/>
+	<echo message="!! your own certificate in $EXIST_HOME/key.store and sign for enabling webstart !!"/>
+        <echo message="!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"/>
+
+        <!-- the core jars can NOT be signed in this build.xml file because -->
+        <!-- the jars are some how locked by ant (classpath.core)-->
+
+    </target>
+
+    <!-- ====================================================== -->
+    <!-- Generate build files for index extensions -->
+    <!-- ====================================================== -->
+    <target name="prepare-extensions" depends="extensions-xslt" unless="extensions.uptodate"/>
+    
+    <target name="extensions-xslt" >
+        <xslt basedir="${build.extensions.indexes}" in="${build.extensions.indexes}/modules.xml"
+            out="${build.extensions.indexes}/build.xml"
+            style="${build.extensions.indexes}/generate.xsl" classpathref="classpath.core" processor="trax"/>
+    </target>
+
+    <!-- ============================================================================ -->
+    <!-- Download additional files                                                    -->
+    <!-- ============================================================================ -->
+    <target name="download-additional-jars" description="Download optional third-party jar files.">
+
+        <!-- International Components for Unicode -->
+        <!-- http://www.icu-project.org/          -->
+        <get src="http://download.icu-project.org/files/icu4j/4.0.1/icu4j-4_0_1.jar"
+            dest="${lib.user}/icu4j-4.0.1.jar" verbose="true"/>
+
+        <!-- Saxon XSLT2 Processor                 -->
+        <!-- http://sourceforge.net/projects/saxon -->
+        <get src="http://prdownloads.sourceforge.net/saxon/saxonb9-1-0-6j.zip"
+            dest="${lib.endorsed}/saxon.zip" verbose="true"/>
+
+        <unzip src="${lib.endorsed}/saxon.zip" dest="${lib.endorsed}">
+            <patternset>
+                <include name="**/saxon9.jar"/>
+                <include name="**/saxon9-dom.jar"/>
+                <include name="**/saxon9-xpath.jar"/>
+            </patternset>
+        </unzip>
+
+        <delete failonerror="no" file="${lib.endorsed}/saxon.zip"/>
+
+    </target>
+
+</project>

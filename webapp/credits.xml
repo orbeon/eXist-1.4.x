@@ -1,0 +1,153 @@
+<?xml version="1.0"?>
+<!--<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "docbookx.dtd">-->
+<!-- $Id$ -->
+<book>
+
+    <bookinfo>
+        <graphic fileref="logo.jpg"/>
+        <productname>Open Source Native XML Database</productname>
+        <title>Credits</title>
+        <date>November 2009</date>
+        <author>
+            <firstname>Wolfgang M.</firstname>
+            <surname>Meier</surname>
+            <affiliation>
+                <address format="linespecific"><email>wolfgang at exist-db.org</email></address>
+            </affiliation>
+        </author>
+    </bookinfo>
+
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="sidebar.xml"/>
+    <chapter>
+        <title>Who we are</title>
+
+        <section>
+            <title>About Us</title>
+
+            <para>eXist has been founded by Wolfgang Meier (wolfgang at exist-db.org)
+            in late 2000, after reading a bunch of articles about efficient indexing methods 
+            for XML during his summer holiday. The project has been continuously developed
+            since then. Wolfgang is still project leader and the main
+            core developer of eXist.</para>
+
+            <para>The original plans have changed quite a bit over time, mostly in response 
+            to user demands. For example, while the main focus 
+            of eXist has been on document-centric documents in the first place, updating 
+            documents via XUpdate has become a major topic recently as more and more data-centric 
+            applications were developed with eXist.</para>
+
+        </section>
+
+        <section>
+            <title>Contributing</title>
+
+            <para>You are welcome to contribute to
+            the future development of eXist. If you would like to get involved, the first step 
+            is to join the <a href="http://sourceforge.net/mail/?group_id=17691">mailing list</a>. 
+            You may also have a look at the 
+            <ulink href="roadmap.xml">roadmap</ulink> to see
+            the known issues that need to be addressed.</para>
+
+            <para>Check <ulink url="building.xml">Building eXist</ulink> for documentation on how
+            to access the subversion repository. To become an active committer, start to post patches to the 
+            mailing list. You will get write access to the Subversion repository if your patches
+            are ok.</para>
+        </section>
+
+        <section>
+            <title>Credits</title>
+
+            <para>The following people have contributed to eXist (by writing code or supplying patches) or are active
+            committers (in strict alphabetical order):</para>
+
+            <unorderedlist>
+                <listitem>
+                    <para>Luigi Bai (patches)</para>
+                </listitem>
+                <listitem>
+                    <para>Timo Boehme (patches)</para>
+                </listitem>
+                <listitem>
+                    <para>Sebastian Bossung (schema service)</para>
+                </listitem>
+                <listitem>
+                    <para>Pierrick Brihaye (developer)</para>
+                </listitem>
+                <listitem>
+                    <para>Loren Cahlander (developer, documentation)</para>
+                </listitem>
+                <listitem>
+                    <para>Mark R. Diggory (tomcat realm)</para>
+                </listitem>
+                <listitem>
+                    <para>James R. Fuller (developer, XProc support)</para>
+                </listitem>
+                <listitem>
+                    <para>José María Fernández González (patches)</para>
+                </listitem>
+                <listitem>
+                    <para>Mark Harrah (XACML)</para>
+                </listitem>
+                <listitem>
+                    <para>Piotr Kaminski (patches, fluent interfaces)</para>
+                </listitem>
+                <listitem>
+                    <para>Stephan Körnig (hashtables)</para>
+                </listitem>
+                <listitem>
+                    <para>Igor Abade V. Leite (patches)</para>
+                </listitem>
+                <listitem>
+                    <para>Evgeny Gazdovsky (developer)</para>
+                </listitem>
+                <listitem>
+                    <para>Chris Marasti-Georg (developer)</para>
+                </listitem>
+                <listitem>
+                    <para>Dan McCreary (documentation)</para>
+                </listitem>
+                <listitem>
+                    <para>Wolfgang Meier (main developer)</para>
+                </listitem>
+                <listitem>
+                    <para>Alex Milowski (patches; LDAP security manager, Atom interface)</para>
+                </listitem>
+                <listitem>
+                    <para>Per Nyfelt (JBoss integration)</para>
+                </listitem>
+                <listitem>
+                    <para>Leif-Jöran Olsson (developer)</para>
+                </listitem>
+                <listitem>
+                    <para>Adam Retter (developer)</para>
+                </listitem>
+                <listitem>
+                    <para>Dmitriy Shabanov (developer)</para>
+                </listitem>
+                <listitem>
+                    <para>Andrzej Taramina (developer)</para>
+                </listitem>
+                <listitem>
+                    <para>Giulio Valentino (developer)</para>
+                </listitem>
+                <listitem>
+                    <para>Jean-Marc Vanel (developer)</para>
+                </listitem>
+                <listitem>
+                    <para>Dannes Wessels (developer)</para>
+                </listitem>
+                <listitem>
+                    <para>Joe Wicentowski (developer)</para>
+                </listitem>
+                <listitem>
+                    <para>Cherif Yaya (XQJ implementation)</para>
+                </listitem>
+            </unorderedlist>
+
+            <para>(probably, some
+            names are missing here, please send a message to Wolfgang to complete
+            this)</para>
+        </section>
+    </chapter>
+</book>
+        

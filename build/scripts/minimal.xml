@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- $Id$ -->
+<project name="minimal" basedir="../.." default="dist-minimal">
+	
+	<import file="../../build.xml"/>
+
+<property name="src.dir" location="."/>
+<property name="dist.minimal.name" value="minimal"/>
+<property name="dist.minimal" location="${dist}/${dist.minimal.name}"/>
+
+<target name="dist-minimal" depends="all">
+  <mkdir dir="${dist.minimal}"/>
+  <copy file="${src.dir}/webapp/WEB-INF/catalog.xml" todir="${dist.minimal}"/>
+  <echo file="${dist.minimal}/client.properties">
+driver=org.exist.xmldb.DatabaseImpl
+
+# uncomment following line if you want to access a
+# stand-alone server
+uri=xmldb:exist://localhost:8088/xmlrpc
+
+# access a local instance of the database
+#uri=xmldb:exist://
+
+alternate_uri_0=xmldb:exist://localhost:8080/exist/xmlrpc
+alternate_uri_1=xmldb:exist://localhost:8088/xmlrpc
+alternate_uri_2=xmldb:exist://
+
+# pretty-print XML
+indent=yes
+
+# default character encoding for display
+# note: the actual encoding of the output depends on
+# your system's language setting. Java will convert all
+# output to System.out into the current default encoding.
+#encoding=ISO-8859-1
+encoding=UTF-8
+
+# use ANSI colors for collection listings
+colors=false
+
+# show user permissions (may slow down the client)
+permissions=true
+
+# should XInclude elements be processed when
+# serializing a document?
+expand-xincludes=yes
+
+# highlight matches in element and attribute values?
+# possible values are "none", "both", "elements", "attributes"
+highlight-matches=none
+
+</echo>
+  <xslt in="${src.dir}/conf.xml" out="${dist.minimal}/conf.xml" style="${build.scripts}/minimal-fix-conf.xsl"/>
+  <copy file="${src.dir}/descriptor.xml" todir="${dist.minimal}"/>
+  <copy file="${src.dir}/exist.jar" todir="${dist.minimal}"/>
+  <copy file="${src.dir}/exist-optional.jar" todir="${dist.minimal}"/>
+  <copy file="${src.dir}/LICENSE" todir="${dist.minimal}"/>
+  <echo file="${src.dir}/log4j.dtd"/>
+  <xslt in="${src.dir}/log4j.xml" out="${dist.minimal}/log4j.xml" style="${build.scripts}/minimal-fix-log4j.xsl"/>
+  <copy file="${src.dir}/mime-types.xml" todir="${dist.minimal}"/>
+  <copy file="${src.dir}/server.xml" todir="${dist.minimal}"/>
+  <copy file="${src.dir}/atom-services.xml" todir="${dist.minimal}"/>
+  <copy file="${src.dir}/atom-example.xq" todir="${dist.minimal}"/>
+  <copy file="${src.dir}/start.jar" todir="${dist.minimal}"/>
+  <mkdir dir="${dist.minimal}/bin"/>
+  <copy todir="${dist.minimal}/bin">
+    <fileset dir="${src.dir}/bin"/>
+  </copy>
+  <mkdir dir="${dist.minimal}/data"/>
+  <mkdir dir="${dist.minimal}/data/journal"/>
+  <mkdir dir="${dist.minimal}/logs"/>
+  <mkdir dir="${dist.minimal}/lib"/>
+  <copy todir="${dist.minimal}/lib">
+    <fileset dir="${src.dir}/lib">
+        <exclude name="**/cocoon/*.jar"/>
+    </fileset>
+  </copy>
+  <mkdir dir="${dist.minimal}/tools"/>
+  <mkdir dir="${dist.minimal}/tools/jetty"/>
+  <copy todir="${dist.minimal}/tools/jetty">
+    <fileset dir="${src.dir}/tools/jetty"/>
+  </copy>
+<!--
+  <mkdir dir="${dist.minimal}/webapp"/>
+-->
+</target>
+
+<target name="clean-minimal">
+    <delete dir="${dist.minimal}"/>
+</target>
+
+</project>

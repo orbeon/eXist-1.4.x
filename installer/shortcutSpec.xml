@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<shortcuts>
+	<programGroup defaultName="eXist XML Database" location="applications"/>
+	
+	<shortcut name="eXist Database Startup" target="$INSTALL_PATH/bin/startup.bat"
+		description="eXist Database Startup" programGroup="yes"
+        desktop="yes" iconFile="$INSTALL_PATH/icon.bmp"/>
+	<shortcut name="eXist Local Homepage" target="$INSTALL_PATH/index.html"
+		description="The local homepage of the server" programGroup="yes"
+        desktop="yes"/>
+	<shortcut name="eXist Client Shell"
+        target="$INSTALL_PATH/bin/client.bat"
+		description="Start the command-line client" programGroup="yes"
+        desktop="yes" terminal="false"/>
+	<shortcut name="Install eXist as Service" 
+		target="$INSTALL_PATH/tools/wrapper/bin/install.bat"
+		description="Install the eXist server as a service"
+		programGroup="yes" desktop="no"/>
+	<shortcut name="Uninstall the eXist service"
+		target="$INSTALL_PATH/tools/wrapper/bin/uninstall.bat"
+		description="Uninstall the eXist service"
+		programGroup="yes" desktop="no"/>
+	<shortcut name="Uninstall" target="$INSTALL_PATH/Uninstaller/uninstaller.jar"
+		description="Uninstall eXist" programGroup="yes"/>
+</shortcuts>

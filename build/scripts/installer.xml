@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ======================================================================= -->
+<!-- eXist build file : Build installer                                      -->
+<!-- ======================================================================= -->
+<!-- $Id$ -->
+<project basedir="../.." default="snapshot-installer" name="Build installer">
+  
+  <description>Build installer</description>
+
+	<!-- import common targets -->
+	<import file="../../build.xml"/>
+		
+	<target name="commandline-installer">
+        <ant antfile="build.xml" dir="tools/izpack"/>
+    </target>
+
+    <target depends="all,samples,javadocs" name="prepare-installer">
+        <taskdef name="izpack" classpath="${izpack.dir}/lib/compiler.jar"
+                classname="com.izforge.izpack.ant.IzPackTask"/>
+        <tstamp/>
+        <delete dir="${jetty.dir}/work/Jetty__8080__exist"/>
+        <touch file="webapp/WEB-INF/logs/exist.log"/>
+        <touch file="webapp/WEB-INF/logs/xmldb.log"/>
+        <filter token="name" value="${project.name}"/>
+        <filter token="version" value="${project.version}"/>
+        <copy file="installer/install.xml.tmpl" tofile="installer/install.xml" 
+              filtering="true" overwrite="true"/>
+    </target>
+
+    <target depends="prepare-installer,commandline-installer" name="installer" description="Create installer">
+        <echo message="Calling IzPack to create installer ..."/>
+        <property name="inst-jar" value="installer/${project.name}-setup-${project.version}.jar"/>
+        <izpack input="installer/install.xml"
+            output="${inst-jar}"
+            basedir="." izPackDir="${izpack.dir}"
+            installerType="standard"/>
+        
+        <mkdir dir="installer/temp"/>
+        <tstamp/>
+        <unjar src="${inst-jar}"
+            dest="installer/temp"/>
+        <delete>
+            <fileset dir="installer/temp">
+                <include name="META-INF/EXIST.*"/>
+            </fileset>
+        </delete>
+        <delete file="${inst-jar}"/>
+        <jar destfile="${inst-jar}"
+            basedir="installer/temp" compress="yes" update="yes">
+            <manifest>
+                <attribute name="Main-Class" value="org.exist.izpack.CommandLineInstaller"/>
+            </manifest>
+        </jar>
+        <delete dir="installer/temp"/>
+    </target>
+
+	<target depends="snapshot-installer" name="installer-exe" description="Create .exe from installer">
+		<taskdef name="launch4j"
+			classname="net.sf.launch4j.ant.Launch4jTask"
+			classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar" />
+		<property name="inst-jar" value="installer/${project.name}-setup-${project.version}-rev${svn.revision}.jar"/>
+		<property name="inst-exe" value="installer/${project.name}-setup-${project.version}-rev${svn.revision}.exe"/>
+		<launch4j configFile="installer/launch4j.xml" jar="${inst-jar}" 
+			outfile="${inst-exe}" fileVersion="${project.version.numeric}.${svn.revision}"
+			txtFileVersion="${project.version}-rev${svn.revision}"
+			productVersion="${project.version.numeric}.${svn.revision}"/>
+	</target>
+	
+    <target depends="prepare-installer,commandline-installer"
+            name="snapshot-installer" description="Create snapshot installer">
+        <echo message="Calling IzPack to create installer ..."/>
+        <property name="inst-jar" value="installer/${project.name}-setup-${project.version}-rev${svn.revision}.jar"/>
+
+        <property name="install-input" location="installer/install.xml"/>
+        <property name="install-output" location="${inst-jar}"/>
+        <property name="install-basedir" location="."/>
+        <izpack input="${install-input}"
+                output="${install-output}"
+                basedir="${install-basedir}" izPackDir="${izpack.dir}"
+                installerType="standard"/>
+    
+    		<!-- remove traces of jar signing -->
+        <taskdef name="unsignjars" classname="nl.ow.dilemma.ant.jar.UnsignJarTask">
+		        <classpath refid="classpath.core"/>
+		    </taskdef>
+        <!--unsignjars>
+            <fileset dir=".">
+                <include name="${inst-jar}"/>
+            </fileset>
+        </unsignjars-->
+        
+        <!-- add main-class to jar-manifest -->
+        <jar destfile="${inst-jar}"
+                compress="yes" update="yes">
+            <manifest>
+                <attribute name="Main-Class" value="org.exist.izpack.CommandLineInstaller"/>
+                <attribute name="Project-Name" value="${project.name}"/>
+                <attribute name="Project-Version" value="${project.version}"/>
+                <attribute name="Project-Build" value="${DSTAMP}"/>
+                <attribute name="SVN-Revision" value="${svn.revision}"/>
+            </manifest>
+        </jar>
+
+    </target>
+
+    <!--target depends="prepare-installer" name="cvs-build">
+        <echo message="Calling IzPack to create installer ..."/>
+        <izpack input="installer/install.xml"
+                output="installer/${project.name}-cvs-${DSTAMP}.jar"
+                basedir="." izPackDir="${izpack.dir}"
+                installerType="standard"/>
+    </target-->
+
+</project>
