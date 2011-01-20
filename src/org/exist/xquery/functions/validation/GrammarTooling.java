@@ -27,10 +27,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.xerces.parsers.XMLGrammarPreparser;
-import org.apache.xerces.xni.grammars.Grammar;
-import org.apache.xerces.xni.grammars.XMLGrammarDescription;
-import org.apache.xerces.xni.parser.XMLInputSource;
+import orbeon.apache.xerces.parsers.XMLGrammarPreparser;
+import orbeon.apache.xerces.xni.grammars.Grammar;
+import orbeon.apache.xerces.xni.grammars.XMLGrammarDescription;
+import orbeon.apache.xerces.xni.parser.XMLInputSource;
 
 import org.exist.Namespaces;
 import org.exist.dom.QName;

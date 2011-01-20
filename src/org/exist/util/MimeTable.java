@@ -270,7 +270,7 @@ public class MimeTable {
      * @throws IOException 
      */
     private void loadMimeTypes(InputStream stream) throws ParserConfigurationException, SAXException, IOException {
-        SAXParserFactory factory = SAXParserFactory.newInstance();
+        SAXParserFactory factory = new org.orbeon.oxf.xml.xerces.XercesSAXParserFactoryImpl();
         factory.setNamespaceAware(true);
         factory.setValidating(false);
         InputSource src = new InputSource(stream);

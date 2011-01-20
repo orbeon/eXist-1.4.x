@@ -28,10 +28,10 @@ import java.net.URL;
 
 import org.apache.log4j.Logger;
 
-import org.apache.xerces.xni.XMLResourceIdentifier;
-import org.apache.xerces.xni.XNIException;
-import org.apache.xerces.xni.parser.XMLEntityResolver;
-import org.apache.xerces.xni.parser.XMLInputSource;
+import orbeon.apache.xerces.xni.XMLResourceIdentifier;
+import orbeon.apache.xerces.xni.XNIException;
+import orbeon.apache.xerces.xni.parser.XMLEntityResolver;
+import orbeon.apache.xerces.xni.parser.XMLInputSource;
 
 import org.exist.protocolhandler.embedded.EmbeddedInputStream;
 import org.exist.protocolhandler.xmldb.XmldbURL;

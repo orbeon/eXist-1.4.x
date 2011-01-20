@@ -476,7 +476,7 @@ public class Eval extends BasicFunction {
 		try {
 			URL url = new URL(uri);
 			InputStreamReader isr = new InputStreamReader(url.openStream(), "UTF-8");
-            SAXParserFactory factory = SAXParserFactory.newInstance();
+            SAXParserFactory factory = new org.orbeon.oxf.xml.xerces.XercesSAXParserFactoryImpl();
             factory.setNamespaceAware(true);
             InputSource src = new InputSource(isr);
             SAXParser parser = factory.newSAXParser();

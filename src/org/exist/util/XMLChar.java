@@ -1,6 +1,6 @@
 package org.exist.util;
 
-// Copied without change from Xerces module org.apache.xerces.util.XMLChar, version 2.5.0
+// Copied without change from Xerces module orbeon.apache.xerces.util.XMLChar, version 2.5.0
 
 /*
  * The Apache Software License, Version 1.1

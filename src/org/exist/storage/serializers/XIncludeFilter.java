@@ -505,7 +505,7 @@ public class XIncludeFilter implements Receiver {
         }
 
         // we use eXist's in-memory DOM implementation
-        SAXParserFactory factory = SAXParserFactory.newInstance();
+        SAXParserFactory factory = new org.orbeon.oxf.xml.xerces.XercesSAXParserFactoryImpl();
         factory.setNamespaceAware(true);
         InputSource src = new InputSource(con.getInputStream());
         SAXParser parser = factory.newSAXParser();

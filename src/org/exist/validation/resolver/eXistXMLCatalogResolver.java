@@ -29,17 +29,17 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.apache.xerces.util.XMLCatalogResolver;
-import org.apache.xerces.xni.XMLResourceIdentifier;
-import org.apache.xerces.xni.XNIException;
-import org.apache.xerces.xni.parser.XMLInputSource;
+import orbeon.apache.xerces.util.XMLCatalogResolver;
+import orbeon.apache.xerces.xni.XMLResourceIdentifier;
+import orbeon.apache.xerces.xni.XNIException;
+import orbeon.apache.xerces.xni.parser.XMLInputSource;
 import org.w3c.dom.ls.LSInput;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
  *  Wrapper around xerces2's
- *  <a href="http://xerces.apache.org/xerces2-j/javadocs/xerces2/org/apache/xerces/util/XMLCatalogResolver.html"
+ *  <a href="http://xerces.apache.org/xerces2-j/javadocs/xerces2/orbeon.apache.xerces/util/XMLCatalogResolver.html"
  *                                                      >XMLCatalogresolver</a>
  * @author Dannes Wessels (dizzzz@exist-db.org)
  */
@@ -84,7 +84,7 @@ public class eXistXMLCatalogResolver extends XMLCatalogResolver {
     }
     
     /**
-     * @see org.apache.xerces.util.XMLCatalogResolver#resolveEntity(String, String)
+     * @see orbeon.apache.xerces.util.XMLCatalogResolver#resolveEntity(String, String)
      */
     public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
         LOG.debug("Resolving publicId='"+publicId+"', systemId='"+systemId+"'");
@@ -134,7 +134,7 @@ public class eXistXMLCatalogResolver extends XMLCatalogResolver {
     }
     
     /**
-     * @see org.apache.xerces.util.XMLCatalogResolver#resolveResource(String, String, String, String, String)
+     * @see orbeon.apache.xerces.util.XMLCatalogResolver#resolveResource(String, String, String, String, String)
      */
     public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseURI) {
         LOG.debug("Resolving type='"+type+"', namespaceURI='"+namespaceURI+"', publicId='"+publicId+"', systemId='"+systemId+"', baseURI='"+baseURI+"'");
@@ -150,7 +150,7 @@ public class eXistXMLCatalogResolver extends XMLCatalogResolver {
     }
     
     /**
-     * @see org.apache.xerces.util.XMLCatalogResolver#resolveEntity(String, String, String, String)
+     * @see orbeon.apache.xerces.util.XMLCatalogResolver#resolveEntity(String, String, String, String)
      */
     public InputSource resolveEntity(String name, String publicId, String baseURI, String systemId) throws SAXException, IOException {
         LOG.debug("Resolving name='"+name+"', publicId='"+publicId+"', baseURI='"+baseURI+"', systemId='"+systemId+"'");
@@ -166,7 +166,7 @@ public class eXistXMLCatalogResolver extends XMLCatalogResolver {
     }
     
     /**
-     * @see org.apache.xerces.util.XMLCatalogResolver#resolveIdentifier(XMLResourceIdentifier)
+     * @see orbeon.apache.xerces.util.XMLCatalogResolver#resolveIdentifier(XMLResourceIdentifier)
      */
     public String resolveIdentifier(XMLResourceIdentifier xri) throws IOException, XNIException {
         
@@ -187,7 +187,7 @@ public class eXistXMLCatalogResolver extends XMLCatalogResolver {
     }
     
     /**
-     * @see org.apache.xerces.util.XMLCatalogResolver#resolveEntity(XMLResourceIdentifier)
+     * @see orbeon.apache.xerces.util.XMLCatalogResolver#resolveEntity(XMLResourceIdentifier)
      */
     public XMLInputSource resolveEntity(XMLResourceIdentifier xri) throws XNIException, IOException {
         if(xri.getExpandedSystemId()==null && xri.getLiteralSystemId()==null && 
@@ -212,7 +212,7 @@ public class eXistXMLCatalogResolver extends XMLCatalogResolver {
     }
 
     /**
-     * @see org.apache.xerces.util.XMLCatalogResolver#getExternalSubset(String, String)
+     * @see orbeon.apache.xerces.util.XMLCatalogResolver#getExternalSubset(String, String)
      */
     public InputSource getExternalSubset(String name, String baseURI) throws SAXException, IOException {
         LOG.debug("name='"+name+"' baseURI='"+baseURI+"'");

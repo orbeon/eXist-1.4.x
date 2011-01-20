@@ -250,7 +250,7 @@ public class RewriteConfig {
     }
 
     private Document parseConfig(File file) throws ParserConfigurationException, SAXException, IOException {
-        SAXParserFactory factory = SAXParserFactory.newInstance();
+        SAXParserFactory factory = new org.orbeon.oxf.xml.xerces.XercesSAXParserFactoryImpl();
         factory.setNamespaceAware(true);
         InputSource src = new InputSource(new FileInputStream(file));
         SAXParser parser = factory.newSAXParser();

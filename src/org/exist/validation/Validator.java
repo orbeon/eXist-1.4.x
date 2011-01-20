@@ -265,7 +265,7 @@ public class Validator {
             ErrorHandler errorHandler) throws ParserConfigurationException, SAXException {
 
         // setup sax factory ; be sure just one instance!
-        SAXParserFactory saxFactory = SAXParserFactory.newInstance();
+        SAXParserFactory saxFactory = new org.orbeon.oxf.xml.xerces.XercesSAXParserFactoryImpl();
 
         // Enable validation stuff
         saxFactory.setValidating(true);

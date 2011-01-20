@@ -165,7 +165,7 @@ public class GetData extends BasicFunction {
 				try
 				{ 
 					//try and construct xml document from input stream, we use eXist's in-memory DOM implementation
-					SAXParserFactory factory = SAXParserFactory.newInstance();
+					SAXParserFactory factory = new org.orbeon.oxf.xml.xerces.XercesSAXParserFactoryImpl();
 					factory.setNamespaceAware(true);
 					//TODO : we should be able to cope with context.getBaseURI()				
 					InputSource src = new InputSource(new ByteArrayInputStream(bufRequestData));

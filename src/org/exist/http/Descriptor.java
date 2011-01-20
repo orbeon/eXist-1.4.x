@@ -121,7 +121,7 @@ public class Descriptor implements ErrorHandler
             // initialize xml parser
             // we use eXist's in-memory DOM implementation to work
             // around a bug in Xerces
-            SAXParserFactory factory = SAXParserFactory.newInstance();
+            SAXParserFactory factory = new org.orbeon.oxf.xml.xerces.XercesSAXParserFactoryImpl();
             factory.setNamespaceAware(true);
             
             InputSource src = new InputSource(is);

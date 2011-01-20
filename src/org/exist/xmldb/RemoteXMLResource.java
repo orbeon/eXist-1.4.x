@@ -201,7 +201,7 @@ public class RemoteXMLResource
     	
         XMLReader reader = xmlReader;
 		if (reader == null) {
-		    SAXParserFactory saxFactory = SAXParserFactory.newInstance();
+		    SAXParserFactory saxFactory = new org.orbeon.oxf.xml.xerces.XercesSAXParserFactoryImpl();
 		    saxFactory.setNamespaceAware(true);
 		    saxFactory.setValidating(false);
             try {

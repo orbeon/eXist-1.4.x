@@ -45,7 +45,7 @@ public class XmlLibraryChecker {
      */
     private final static ClassVersion[] validParsers = {
         new ClassVersion("Xerces", "Xerces-J 2.9.1", 
-                "org.apache.xerces.impl.Version.getVersion()")
+                "orbeon.apache.xerces.impl.Version.getVersion()")
     };
     
     /**
@@ -53,7 +53,7 @@ public class XmlLibraryChecker {
      */
     private final static ClassVersion[] validTransformers = {
         new ClassVersion("Saxon", "8.9.0", 
-                "net.sf.saxon.Version.getProductVersion()"),
+                "org.orbeon.saxon.Version.getProductVersion()"),
         new ClassVersion("Xalan", "Xalan Java 2.7.1", 
                 "org.apache.xalan.Version.getVersion()"),
     };

@@ -805,7 +805,7 @@ public class RESTServer {
 
 	private ElementImpl parseXML(String content, NamespaceExtractor nsExtractor) throws ParserConfigurationException, SAXException, IOException
 	{
-		SAXParserFactory factory = SAXParserFactory.newInstance();
+		SAXParserFactory factory = new org.orbeon.oxf.xml.xerces.XercesSAXParserFactoryImpl();
 		factory.setNamespaceAware(true);
 		InputSource src = new InputSource(new StringReader(content));
 		SAXParser parser = factory.newSAXParser();

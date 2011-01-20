@@ -85,7 +85,7 @@ public class Parse extends BasicFunction {
         }
         StringReader reader = new StringReader(xmlContent);
         try {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
+            SAXParserFactory factory = new org.orbeon.oxf.xml.xerces.XercesSAXParserFactoryImpl();
             factory.setNamespaceAware(true);
             InputSource src = new InputSource(reader);
 

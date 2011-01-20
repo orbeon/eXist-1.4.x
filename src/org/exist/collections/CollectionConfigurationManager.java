@@ -146,7 +146,7 @@ public class CollectionConfigurationManager {
      */
     public void testConfiguration(DBBroker broker, String config) throws CollectionConfigurationException {
         try {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
+            SAXParserFactory factory = new org.orbeon.oxf.xml.xerces.XercesSAXParserFactoryImpl();
             factory.setNamespaceAware(true);
             InputSource src = new InputSource(new StringReader(config));
             SAXParser parser = factory.newSAXParser();

@@ -37,7 +37,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.xerces.xni.parser.XMLEntityResolver;
+import orbeon.apache.xerces.xni.parser.XMLEntityResolver;
 
 import org.exist.Namespaces;
 import org.exist.dom.QName;
@@ -304,7 +304,7 @@ public class Jaxp extends BasicFunction {
     private XMLReader getXMLReader() throws ParserConfigurationException, SAXException {
 
         // setup sax factory ; be sure just one instance!
-        SAXParserFactory saxFactory = SAXParserFactory.newInstance();
+        SAXParserFactory saxFactory = new org.orbeon.oxf.xml.xerces.XercesSAXParserFactoryImpl();
 
         // Enable validation stuff
         saxFactory.setValidating(true);

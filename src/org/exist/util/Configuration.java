@@ -270,7 +270,7 @@ public class Configuration implements ErrorHandler
             // initialize xml parser
             // we use eXist's in-memory DOM implementation to work
             // around a bug in Xerces
-            SAXParserFactory factory = SAXParserFactory.newInstance();
+            SAXParserFactory factory = new org.orbeon.oxf.xml.xerces.XercesSAXParserFactoryImpl();
             factory.setNamespaceAware(true);
 //            factory.setFeature("http://apache.org/xml/features/validation/schema", true);
 //            factory.setFeature("http://apache.org/xml/features/validation/dynamic", true);

@@ -106,7 +106,7 @@ public class ExistSAXParserFactory {
 
         // If no factory could be retrieved, create system default property.
         if (factory == null) {
-            factory = SAXParserFactory.newInstance();
+            factory = new org.orbeon.oxf.xml.xerces.XercesSAXParserFactoryImpl();
         }
 
         return factory;

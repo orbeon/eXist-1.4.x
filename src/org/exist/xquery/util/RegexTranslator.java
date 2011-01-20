@@ -11,7 +11,7 @@ import org.exist.xquery.Constants;
 
 /**
  * This class translates XML Schema regex syntax into JDK 1.4 regex syntax.
- * Copied from Saxon package net.sf.saxon.type without change. The original 
+ * Copied from Saxon package org.orbeon.saxon.type without change. The original 
  * author is James Clark. See license.
  */
 public class RegexTranslator {

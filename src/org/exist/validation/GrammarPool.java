@@ -22,10 +22,10 @@
 package org.exist.validation;
 
 import org.apache.log4j.Logger;
-import org.apache.xerces.util.XMLGrammarPoolImpl;
-import org.apache.xerces.xni.grammars.Grammar;
-import org.apache.xerces.xni.grammars.XMLGrammarDescription;
-import org.apache.xerces.xni.grammars.XMLGrammarPool;
+import orbeon.apache.xerces.util.XMLGrammarPoolImpl;
+import orbeon.apache.xerces.xni.grammars.Grammar;
+import orbeon.apache.xerces.xni.grammars.XMLGrammarDescription;
+import orbeon.apache.xerces.xni.grammars.XMLGrammarPool;
 import org.exist.Namespaces;
 
 /**
@@ -34,10 +34,10 @@ import org.exist.Namespaces;
  *
  * @author Dannes Wessels (dizzzz@exist-db.org)
  *
- * @see org.apache.xerces.xni.grammars.XMLGrammarPool
- * @see org.apache.xerces.util.XMLGrammarPoolImpl
- * @see org.apache.xerces.xni.grammars.Grammar
- * @see org.apache.xerces.xni.grammars.XMLGrammarDescription
+ * @see orbeon.apache.xerces.xni.grammars.XMLGrammarPool
+ * @see orbeon.apache.xerces.util.XMLGrammarPoolImpl
+ * @see orbeon.apache.xerces.xni.grammars.Grammar
+ * @see orbeon.apache.xerces.xni.grammars.XMLGrammarDescription
  */
 public class GrammarPool implements XMLGrammarPool {
     
@@ -70,10 +70,10 @@ public class GrammarPool implements XMLGrammarPool {
      * by a validator before the validation starts. the application can provide 
      * an initial set of grammars available to the current validation attempt.
      *
-     * @see org.apache.xerces.xni.grammars.XMLGrammarPool#retrieveInitialGrammarSet(String)
+     * @see orbeon.apache.xerces.xni.grammars.XMLGrammarPool#retrieveInitialGrammarSet(String)
      * 
      * @param   type  The type of the grammar, from the 
-     *          org.apache.xerces.xni.grammars.Grammar interface.
+     *          orbeon.apache.xerces.xni.grammars.Grammar interface.
      * @return  The set of grammars the validator may put in its "bucket"
      */
     public Grammar[] retrieveInitialGrammarSet(String type) {
@@ -89,7 +89,7 @@ public class GrammarPool implements XMLGrammarPool {
     /**
      *  Return the final set of grammars that the validator ended up with.
      *
-     * @see org.apache.xerces.xni.grammars.XMLGrammarPool#cacheGrammars(String,Grammar[])
+     * @see orbeon.apache.xerces.xni.grammars.XMLGrammarPool#cacheGrammars(String,Grammar[])
      * 
      * @param type      The type of the grammars being returned
      * @param grammar   an array containing the set of grammars being 
@@ -106,7 +106,7 @@ public class GrammarPool implements XMLGrammarPool {
      * cacheGrammars(String, Grammar[]) method is called. This is the default 
      * state of the object.
      *
-     * @see org.apache.xerces.xni.grammars.XMLGrammarPool#unlockPool
+     * @see orbeon.apache.xerces.xni.grammars.XMLGrammarPool#unlockPool
      */
     public void unlockPool() {
         if (logger.isDebugEnabled())
@@ -121,7 +121,7 @@ public class GrammarPool implements XMLGrammarPool {
      * EntityResolver. An application must not call its EntityResolver itself 
      * from this method; this may result in infinite recursions.
      *
-     * @see org.apache.xerces.xni.grammars.XMLGrammarPool#retrieveGrammar(XMLGrammarDescription)
+     * @see orbeon.apache.xerces.xni.grammars.XMLGrammarPool#retrieveGrammar(XMLGrammarDescription)
      *
      * @param xgd    The description of the Grammar being requested.
      * @return       the Grammar corresponding to this description or null 
@@ -152,7 +152,7 @@ public class GrammarPool implements XMLGrammarPool {
      *  Causes the XMLGrammarPool not to store any grammars when the 
      * cacheGrammars(String, Grammar[[]) method is called.
      *
-     * @see org.apache.xerces.xni.grammars.XMLGrammarPool#lockPool
+     * @see orbeon.apache.xerces.xni.grammars.XMLGrammarPool#lockPool
      */
     public void lockPool() {
         if (logger.isDebugEnabled())
@@ -163,7 +163,7 @@ public class GrammarPool implements XMLGrammarPool {
     /**
      *  Removes all grammars from the pool.
      *
-     * @see org.apache.xerces.xni.grammars.XMLGrammarPool#clear
+     * @see orbeon.apache.xerces.xni.grammars.XMLGrammarPool#clear
      */
     public void clear() {
         if (logger.isDebugEnabled())
@@ -174,7 +174,7 @@ public class GrammarPool implements XMLGrammarPool {
     /**
      *  Removes all DTD grammars from the pool. Workaround for Xerces bug.
      *
-     * @see org.apache.xerces.xni.grammars.XMLGrammarPool#clear
+     * @see orbeon.apache.xerces.xni.grammars.XMLGrammarPool#clear
      */
     public void clearDTDs() {
         //if (logger.isDebugEnabled())

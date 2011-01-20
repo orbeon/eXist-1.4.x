@@ -62,7 +62,7 @@ public abstract class AbstractBackupDescriptor implements BackupDescriptor {
     }
 
     public void parse(ContentHandler handler) throws IOException, SAXException, ParserConfigurationException {
-        SAXParserFactory saxFactory = SAXParserFactory.newInstance();
+        SAXParserFactory saxFactory = new org.orbeon.oxf.xml.xerces.XercesSAXParserFactoryImpl();
         saxFactory.setNamespaceAware(true);
         saxFactory.setValidating(false);
         SAXParser sax = saxFactory.newSAXParser();

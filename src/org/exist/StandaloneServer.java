@@ -420,7 +420,7 @@ public class StandaloneServer {
         }
         
         // initialize xml parser
-        SAXParserFactory factory = SAXParserFactory.newInstance();
+        SAXParserFactory factory = new org.orbeon.oxf.xml.xerces.XercesSAXParserFactoryImpl();
         factory.setNamespaceAware(true);
         factory.setValidating(false);
         InputSource src = new InputSource(is);

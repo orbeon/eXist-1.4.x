@@ -79,7 +79,7 @@ public class Restore extends DefaultHandler {
 		if (newAdminPass != null)
 			setAdminCredentials(newAdminPass);
 		
-		SAXParserFactory saxFactory = SAXParserFactory.newInstance();
+		SAXParserFactory saxFactory = new org.orbeon.oxf.xml.xerces.XercesSAXParserFactoryImpl();
 		saxFactory.setNamespaceAware(true);
 		saxFactory.setValidating(false);
 		SAXParser sax = saxFactory.newSAXParser();
